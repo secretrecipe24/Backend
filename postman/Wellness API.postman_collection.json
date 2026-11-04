@@ -1,0 +1,424 @@
+{
+  "info": {
+    "_postman_id": "4f7c0c7a-5d0a-4c8a-bb13-1c5bd5bba2e5",
+    "name": "Wellness API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Get Subscription Plans",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subscriptions/plans",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "subscriptions", "plans" ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('success envelope present', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json).to.have.property('data');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User (Client)",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"testuser@example.com\",\n  \"password\": \"password\",\n  \"password_confirmation\": \"password\",\n  \"age\": 25,\n  \"gender\": \"male\",\n  \"fitness_goals\": [\"weight_loss\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/user/register",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "user", "register" ]
+            }
+          }
+        },
+        {
+          "name": "Login (sets user_token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/user/login",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "user", "login" ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('login success', function () {",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});",
+                  "const token = json?.data?.token;",
+                  "if (token) pm.environment.set('user_token', token);",
+                  "const userId = json?.data?.user?.id;",
+                  "if (userId) pm.environment.set('user_id', String(userId));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/me",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "user", "me" ]
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User Updated\",\n  \"dark_mode\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/user/profile",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "user", "profile" ]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/logout",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "user", "logout" ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Subscriptions",
+      "item": [
+        {
+          "name": "Submit Payment (multipart)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "plan_type", "value": "monthly", "type": "text" },
+                { "key": "gcash_reference_number", "value": "GCASH-REF-0001", "type": "text" },
+                { "key": "gcash_sender_name", "value": "Juan Dela Cruz", "type": "text" },
+                { "key": "gcash_sender_number", "value": "09171234567", "type": "text" },
+                { "key": "screenshot", "type": "file", "src": [] }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subscriptions/submit-payment",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "subscriptions", "submit-payment" ]
+            }
+          }
+        },
+        {
+          "name": "My Submissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subscriptions/my-submissions",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "subscriptions", "my-submissions" ]
+            }
+          }
+        },
+        {
+          "name": "Subscription Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subscriptions/status",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "subscriptions", "status" ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Premium (requires subscription)",
+      "item": [
+        {
+          "name": "Save Preferences",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fitness_goals\": [\"weight_loss\"],\n  \"coaching_style\": \"supportive\",\n  \"preferred_specialties\": [\"nutrition\", \"weight_loss\"],\n  \"communication_frequency\": \"few_times_week\",\n  \"communication_style\": \"mixed\",\n  \"experience_level\": \"beginner\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/matches/preferences",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "matches", "preferences" ]
+            }
+          }
+        },
+        {
+          "name": "Get Suggestions",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/matches/suggestions",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "matches", "suggestions" ]
+            }
+          }
+        },
+        {
+          "name": "Browse Coaches",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/matches/coaches?available_only=1",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "matches", "coaches" ],
+              "query": [
+                { "key": "available_only", "value": "1" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get My Workout Plans",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{user_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/client/workouts/plans",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "client", "workouts", "plans" ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Coach",
+      "item": [
+        {
+          "name": "Login (sets coach_token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"coach1@wellness.com\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/coach/login",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "coach", "login" ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const token = json?.data?.token;",
+                  "if (token) pm.environment.set('coach_token', token);",
+                  "const coachId = json?.data?.coach?.id;",
+                  "if (coachId) pm.environment.set('coach_id', String(coachId));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{coach_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/coach/me",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "coach", "me" ]
+            }
+          }
+        },
+        {
+          "name": "My Clients",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{coach_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/coach/plans/clients",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "coach", "plans", "clients" ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Login (sets admin_token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@wellness.com\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/admin/login",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "admin", "login" ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const token = json?.data?.token;",
+                  "if (token) pm.environment.set('admin_token', token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/payments/stats",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "admin", "payments", "stats" ]
+            }
+          }
+        },
+        {
+          "name": "Pending Payments",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/payments/pending",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "admin", "payments", "pending" ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
