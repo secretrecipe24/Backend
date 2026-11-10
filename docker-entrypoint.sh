@@ -11,4 +11,4 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-exec frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile
+exec frankenphp run --config /etc/caddy/Caddyfile
