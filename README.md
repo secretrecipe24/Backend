@@ -21,6 +21,28 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
+## Deploying on Railway
+
+This project includes a Docker deployment for Railway. Create a Railway service using
+`backend` as the root directory. Railway will use the included `Dockerfile`.
+
+Set these environment variables on the web service:
+
+```text
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=<output of php artisan key:generate --show>
+APP_URL=https://backend-production-b16fa.up.railway.app
+DB_CONNECTION=pgsql
+DB_URL=<Railway PostgreSQL connection URL>
+FRONTEND_URL=https://corevia-lake.vercel.app
+CORS_ALLOWED_ORIGINS=https://corevia-lake.vercel.app
+```
+
+Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REDIRECT_URI` as well if
+Google sign-in is enabled. The container runs migrations and caches Laravel configuration,
+routes, and views when it starts.
+
 ## Learning Laravel
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
