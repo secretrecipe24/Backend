@@ -4,7 +4,7 @@ set -e
 export PORT="${PORT:-10000}"
 
 if [ ! -e public/storage ]; then
-    php artisan storage:link --relative
+    php artisan storage:link
 fi
 php artisan migrate --force
 php artisan config:cache
