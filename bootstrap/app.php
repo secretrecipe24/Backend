@@ -19,6 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->prepend(\Illuminate\Http\Middleware\HandleCors::class);
+
         $middleware->alias([
             'api.response' => \App\Http\Middleware\ApiResponseMiddleware::class,
             'subscription' => \App\Http\Middleware\SubscriptionMiddleware::class,
