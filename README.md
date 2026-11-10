@@ -33,8 +33,12 @@ APP_ENV=production
 APP_DEBUG=false
 APP_KEY=<output of php artisan key:generate --show>
 APP_URL=https://backend-production-b16fa.up.railway.app
-DB_CONNECTION=pgsql
-DB_URL=<Railway PostgreSQL connection URL>
+DB_CONNECTION=mysql
+DB_HOST=<Railway MySQL host>
+DB_PORT=3306
+DB_DATABASE=<Railway MySQL database>
+DB_USERNAME=<Railway MySQL username>
+DB_PASSWORD=<Railway MySQL password>
 FRONTEND_URL=https://corevia-lake.vercel.app
 CORS_ALLOWED_ORIGINS=https://corevia-lake.vercel.app
 ```

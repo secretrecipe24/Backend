@@ -3,6 +3,7 @@ FROM dunglas/frankenphp:php8.2-bookworm
 RUN install-php-extensions \
     intl \
     opcache \
+    pdo_mysql \
     pdo_pgsql \
     zip
 
